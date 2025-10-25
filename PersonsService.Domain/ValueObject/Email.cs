@@ -1,33 +1,24 @@
+using System.Text.RegularExpressions;
 using PersonsService.Domain.Validations;
 
 namespace PersonsService.Domain.ValueObject;
 
 public class Email
 {
+    private static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", RegexOptions.Compiled);
+
     public string Address { get; }
 
     public Email(string address)
     {
         address.ThrowIfNullOrWhiteSpace(nameof(address));
-        if (!IsValidEmail(address))
+
+        if (!EmailRegex.IsMatch(address))
         {
             throw new ArgumentException("Invalid email format.", nameof(address));
         }
 
         Address = address;
-    }
-
-    private bool IsValidEmail(string email)
-    {
-        try
-        {
-            var addr = new System.Net.Mail.MailAddress(email);
-            return addr.Address == email;
-        }
-        catch
-        {
-            return false;
-        }
     }
 
     public override bool Equals(object obj)
