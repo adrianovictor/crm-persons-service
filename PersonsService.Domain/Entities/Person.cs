@@ -1,6 +1,7 @@
 using PersonsService.Domain.Core;
 using PersonsService.Domain.Enum;
 using PersonsService.Domain.Validations;
+using PersonsService.Domain.ValueObject;
 
 namespace PersonsService.Domain.Entities;
 
@@ -34,7 +35,7 @@ private readonly List<PersonDocument> _documents = [];
     public MaritalStatus MaritalStatus { get; protected set; }
     public string? Nationality { get; protected set; }
     public string? Naturality { get; protected set; }
-    public string? Email { get; protected set;}
+    public Email Email { get; protected set;}
     public string? Notes { get; protected set; }
     public int? EnterpriseId { get; protected set; }
 
@@ -46,7 +47,7 @@ private readonly List<PersonDocument> _documents = [];
     public Person(
         Guid uniqueId, string name, Gender gender, Status status, MaritalStatus maritalStatus, 
         string? picture, string? alias, string? jobTitle, DateTime? dateOfBirth, 
-        string? nationality, string? naturality, string? email, string? notes, int? enterpriseId, 
+        string? nationality, string? naturality, string email, string? notes, int? enterpriseId, 
         IReadOnlyCollection<PersonDocument> documents) : this()
     {
         UniqueId = uniqueId; // Builder define o ID ou deixa o padrão
@@ -62,7 +63,7 @@ private readonly List<PersonDocument> _documents = [];
         DateOfBirth = dateOfBirth;
         Nationality = nationality;
         Naturality = naturality;
-        Email = email;
+        Email = new Email(email);
         Notes = notes;
         EnterpriseId = enterpriseId;
         
@@ -139,7 +140,7 @@ private readonly List<PersonDocument> _documents = [];
     public void Delete()
     {
         Name = $"DELETED.{DateTime.Now.ToString("yyyyMMddHHmmss")}.{Name}";
-        Email = $"DELETED.{DateTime.Now.ToString("yyyyMMddHHmmss")}.{Email}";
+        Email = new Email($"DELETED.{DateTime.Now.ToString("yyyyMMddHHmmss")}.{Email.Address}");
 
         ChangeStatus(Status.Delete);
     }

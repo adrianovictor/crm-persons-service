@@ -32,4 +32,20 @@ public class PersonDocument : Entity<PersonDocument>
         ArgumentNullException.ThrowIfNull(person);
         Person = person;
     }
+
+    public override bool Equals(object obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        var other = (PersonDocument)obj;
+        return DocumentType == other.DocumentType && DocumentNumber == other.DocumentNumber;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(DocumentType, DocumentNumber);
+    }    
 }
