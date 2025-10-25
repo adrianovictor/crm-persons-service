@@ -6,7 +6,7 @@ namespace PersonsService.Domain.Entities;
 
 public class Person : Statusable<Person>
 {
-    private readonly List<PersonDocument> _documents = [];
+private readonly List<PersonDocument> _documents = [];
 
     public Guid UniqueId { get; protected set; }
     public string Name { get; protected set; }
@@ -15,7 +15,21 @@ public class Person : Statusable<Person>
     public IReadOnlyCollection<PersonDocument> Documents => _documents;
     public string? JobTitle { get; protected set; }
     public DateTime? DateOfBirth { get; protected set; }
-    public int? Age { get; protected set; }
+    public int? CalculatedAge 
+    {
+        get 
+        {
+            if (DateOfBirth.HasValue)
+            {
+                var today = DateTime.Today;
+                var age = today.Year - DateOfBirth.Value.Year;
+                
+                if (DateOfBirth.Value.Date > today.AddYears(-age)) age--;
+                return age;
+            }
+            return null;
+        }
+    }
     public Gender Gender { get; protected set; }
     public MaritalStatus MaritalStatus { get; protected set; }
     public string? Nationality { get; protected set; }
@@ -29,32 +43,31 @@ public class Person : Statusable<Person>
         UniqueId = Guid.NewGuid();
     }
 
-    public Person(string name, string? picture, string? alias, string? jobTitle, DateTime? dateOfBirth, int? age,
-        string? nationality, string? naturality, string? email, string? notes, int? enterpriseId,
-        Gender gender, MaritalStatus maritalStatus = MaritalStatus.None, Status status = Status.Active) : this()
+    public Person(
+        Guid uniqueId, string name, Gender gender, Status status, MaritalStatus maritalStatus, 
+        string? picture, string? alias, string? jobTitle, DateTime? dateOfBirth, 
+        string? nationality, string? naturality, string? email, string? notes, int? enterpriseId, 
+        IReadOnlyCollection<PersonDocument> documents) : this()
     {
-        name.ThrowIfNullOrWhiteSpace(nameof(name));        
-
+        UniqueId = uniqueId; // Builder define o ID ou deixa o padrão
         Name = name;
+        Gender = gender;
+        MaritalStatus = maritalStatus;
+        Status = status;
+        
+        // Atribuição dos demais campos
         Picture = picture;
         Alias = alias;
         JobTitle = jobTitle;
         DateOfBirth = dateOfBirth;
-        Age = age;
-        Gender = gender;
-        MaritalStatus = maritalStatus;
         Nationality = nationality;
         Naturality = naturality;
         Email = email;
         Notes = notes;
         EnterpriseId = enterpriseId;
-        Status = status;
-    }
-
-    public static Person Create(string name, string? picture, string? alias, string? jobTitle, DateTime? dateOfBirth, 
-        int? age, string? nationality, string? naturality, string? email, string? notes, int? enterpriseId, Gender gender, MaritalStatus maritalStatus, Status status)
-    {
-        return new(name, picture, alias, jobTitle, dateOfBirth, age, nationality, naturality, email, notes, enterpriseId, gender, maritalStatus, status);
+        
+        // Adiciona documentos (se necessário)
+        if (documents != null) _documents.AddRange(documents);
     }
 
     public void RenameIt(string name, string? alias)
