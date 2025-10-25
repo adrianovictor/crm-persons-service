@@ -1,0 +1,92 @@
+name: Code Review by Gemini AI
+
+on:
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get PR diff
+        id: get_diff
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          git fetch origin ${{ github.event.pull_request.head.ref }}
+          git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ github.event.pull_request.head.ref }} > diff.txt
+          echo "pull_request_diff<<EOF" >> $GITHUB_OUTPUT
+          cat diff.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Code Review by Gemini AI
+        uses: rubensflinco/gemini-code-review-action@1.0.5
+        with:
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_repository: ${{ github.repository }}
+          github_pull_request_number: ${{ github.event.pull_request.number }}
+          git_commit_hash: ${{ github.event.pull_request.head.sha }}
+          model: "gemini-1.5-flash-latest"
+          pull_request_diff: ${{ steps.get_diff.outputs.pull_request_diff }}
+          pull_request_diff_chunk_size: "3500"
+          extra_prompt: |
+            **Instruções Detalhadas para o Revisor de Código AI (Branch Develop):**
+            1. **Idioma e Tom:** Responda sempre em **Português Brasileiro**. Seja **direto, objetivo e profissional**, como um Engenheiro de Software Sênior.
+            2. **Contexto Arquitetural Rigoroso:** O código é para APIs em .NET Core. A avaliação DEVE ser extremamente rigorosa quanto à adesão a:
+                - **Clean Architecture / Arquitetura em Camadas**
+                - **CQRS com MediatR** (separação clara de Commands e Queries)
+                - **Princípios SOLID e DDD (Domain-Driven Design)**
+                - Uso correto de **Entity Framework e/ou Dapper** (eficiência e performance)
+                - Estrutura de **Docker/Docker-Compose** e scripts de **Liquibase (SQL Server, Postgres, MySQL)**.
+
+            3. **Foco de Análise Obrigatória:**
+                a. **Lógica e *Typos*:** Identificar **falhas de lógica** (*bugs* funcionais, *edge cases* não tratados) e erros de digitação (*typos*) que afetem o funcionamento ou legibilidade.
+                b. **Arquitetura/Padrão:** Verificar violações de fronteiras arquiteturais (ex: acesso direto ao EF na camada de Application), violações de SOLID (ex: classes com múltiplas responsabilidades) e desvios do padrão DDD.
+                c. **Performance (C#):** Avaliar gargalos, uso ineficiente de LINQ, concorrência (ex: uso indevido de *locks* ou coleções não thread-safe).
+                d. **Async/Sync:** Garantir o uso correto de `async/await` (evitar `Task.Wait()`, *fire-and-forget* em APIs), garantindo a cadeia assíncrona.
+                e. **SQL/Sintaxe:** Analisar a performance das consultas SQL (via código ou Liquibase), checar sintaxe C# e aderência às convenções de nomenclatura.
+
+            4. **Formato de Comentário (Por Ponto):**
+                Para cada problema ou sugestão, inclua o **arquivo** e a **linha aproximada**, e siga o padrão, utilizando Markdown:
+                - **Severidade:** [Alta, Média, Baixa]
+                - **Sugestão:** [como melhorar]
+
+            5. **Regra de Bloqueio (Problemas Críticos):**
+                - Se o revisor encontrar um problema **grave** (ex: falha de segurança, *deadlock* certo, quebra de Clean Architecture ou inconsistência de dados), você **DEVE** iniciar o comentário com a *string* exata: `🚨 PROBLEMA CRÍTICO:`
+                - **EXEMPLO DE BLOQUEIO:** `🚨 PROBLEMA CRÍTICO: Violação do princípio CQS. Este método de Command está retornando dados de domínio, o que quebra a separação de responsabilidades.`
+
+            6. **Estrutura da Resposta:** Separe a revisão em seções claras: **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura e Padrões (ALTA/MÉDIA)** e **Melhorias de Legibilidade e Sintaxe (BAIXA)**.
+          log_level: "DEBUG"
+          log_level: "DEBUG"
+
+      - name: Salvar resposta da Gemini
+        run: |
+          echo "${{ steps.gemini_review.outputs.gemini_log }}" > gemini_log.txt
+
+      - name: Simular estrutura JSON básica de erro (temporário até a action suportar JSON real)
+        run: |
+          if grep -q "🚨 PROBLEMA CRÍTICO" gemini_log.txt; then
+            echo '{ "status": "error", "severity": "critical", "message": "Problema crítico detectado pelo Gemini." }' > gemini-result.json
+          else
+            echo '{ "status": "ok" }' > gemini-result.json
+          fi
+
+      - name: Verificar problemas críticos
+        run: |
+          STATUS=$(jq -r '.status' gemini-result.json)
+          MSG=$(jq -r '.message' gemini-result.json)
+
+          if [ "$STATUS" == "error" ]; then
+            echo "::error title=Erro do Gemini::$MSG"
+            exit 1
+          else
+            echo "✅ Nenhum problema crítico detectado pelo Gemini."
+          fi
+       
