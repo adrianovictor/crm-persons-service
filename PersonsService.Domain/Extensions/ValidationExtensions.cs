@@ -1,9 +1,19 @@
-using System.Text.RegularExpressions;
-
 namespace PersonsService.Domain.Extensions;
 
+/// <summary>
+/// Extensões para validação de parâmetros.
+/// </summary>
 public static class ValidationExtensions
 {
+
+    #region Validações de Strings
+    /// <summary>
+    /// Lança uma ArgumentNullException se a string for nula ou vazia.
+    /// </summary>
+    /// <param name="value">valor da string</param>
+    /// <param name="paramName">parametro a ser validado</param>
+    /// <param name="message">mensagem de erro personalizada</param>
+    /// <exception cref="ArgumentNullException">lança uma exceção se a string for nula ou vazia</exception>
     public static void ThrowIfNullOrWhiteSpace(this string? value, string paramName, string? message = null)
     {
         if (string.IsNullOrWhiteSpace(value))
@@ -12,6 +22,14 @@ public static class ValidationExtensions
         }
     }
 
+    /// <summary>
+    /// Lança uma ArgumentNullException se o objeto for nulo.
+    /// </summary>
+    /// <typeparam name="T">Tipo do objeto</typeparam>
+    /// <param name="value">valor do objeto</param>
+    /// <param name="paramName">parametro a ser validado</param>
+    /// <param name="message">mensagem de erro personalizada</param>
+    /// <exception cref="ArgumentNullException">lança uma exceção se o objeto for nulo</exception>
     public static void ThrowIfNull<T>(this T? value, string paramName, string? message = null) where T : class
     {
         if (value == null)
@@ -20,6 +38,14 @@ public static class ValidationExtensions
         }
     }
 
+    /// <summary>
+    /// Lança uma ArgumentNullException se o valor nulo de um tipo valor for nulo.
+    /// </summary>
+    /// <typeparam name="T">Tipo do objeto</typeparam>
+    /// <param name="value">valor do objeto</param>
+    /// <param name="paramName">parametro a ser validado</param>
+    /// <param name="message">mensagem de erro personalizada</param>
+    /// <exception cref="ArgumentNullException">lança uma exceção se o valor nulo de um tipo valor for nulo</exception>
     public static void ThrowIfNull<T>(this T? value, string paramName, string? message = null) where T : struct
     {
         if (!value.HasValue)
@@ -27,7 +53,16 @@ public static class ValidationExtensions
             throw new ArgumentNullException(paramName, message ?? $"O parâmetro '{paramName}' não pode ser nulo.");
         }
     }
+    #endregion
 
+    #region Validações de Números
+    /// <summary>
+    /// Lança uma ArgumentOutOfRangeException se o valor for menor ou igual a zero.
+    /// </summary>
+    /// <param name="value">valor do objeto</param>
+    /// <param name="paramName">parametro a ser validado</param>
+    /// <param name="message">mensagem de erro personalizada</param>
+    /// <exception cref="ArgumentOutOfRangeException">lança uma exceção se o valor for menor ou igual a zero</exception>
     public static void ThrowIfZeroOrNegative(this int value, string paramName, string? message = null)
     {
         if (value <= 0)
@@ -36,6 +71,13 @@ public static class ValidationExtensions
         }
     }
 
+    /// <summary>
+    /// Lança uma ArgumentOutOfRangeException se o valor não for um ano válido (entre 1900 e o ano atual).
+    /// </summary>
+    /// <param name="value">valor do objeto</param>
+    /// <param name="paramName">parametro a ser validado</param>
+    /// <param name="message">mensagem de erro personalizada</param>
+    /// <exception cref="ArgumentOutOfRangeException">lança uma exceção se o valor não for um ano válido (entre 1900 e o ano atual)</exception>
     public static void ThrowIfValidYear(this int value, string paramName, string? message = null)
     {
         var currentYear = DateTime.UtcNow.Year;
@@ -45,6 +87,13 @@ public static class ValidationExtensions
         }
     }
 
+    /// <summary>
+    /// Lança uma ArgumentOutOfRangeException se o valor for negativo.
+    /// </summary>
+    /// <param name="value">valor do objeto</param>
+    /// <param name="paramName">parametro a ser validado</param>
+    /// <param name="message">mensagem de erro personalizada</param>
+    /// <exception cref="ArgumentOutOfRangeException">lança uma exceção se o valor for negativo</exception>
     public static void ThrowIfNegative(this decimal value, string paramName, string? message = null)
     {
         if (value < 0)
@@ -52,16 +101,6 @@ public static class ValidationExtensions
             throw new ArgumentOutOfRangeException(paramName, message ?? $"O parâmetro '{paramName}' não pode ser negativo.");
         }
     }
-
-    public static void ThrowIfBrazilianVehiclePlateInvalid(this string plate, string paramName, string? message = null)
-    {
-        var regexOld = new Regex(@"^[A-Z]{3}-?[0-9]{4}$");
-        var regexNew = new Regex(@"^[A-Z]{3}[0-9][A-Z][0-9]{2}$");
-
-        if (!regexOld.IsMatch(plate) && !regexNew.IsMatch(plate))
-        {
-            throw new ArgumentException(message ?? $"O parâmetro '{paramName}' não é uma placa de veículo brasileira válida.", paramName);
-        }
-    }  
+    #endregion
 }
 
