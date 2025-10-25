@@ -45,7 +45,8 @@ jobs:
                 - **Princípios SOLID e DDD (Domain-Driven Design)**
                 - Uso correto de **Entity Framework e/ou Dapper** (eficiência e performance)
                 - Estrutura de **Docker/Docker-Compose** e scripts de **Liquibase (SQL Server, Postgres, MySQL)**.
-                - **Nota sobre Validação:** O uso de métodos de extensão que lançam 'ArgumentException' é permitido e incentivado, desde que ocorra APENAS dentro de construtores/métodos da camada de Domínio (Aggregate Roots/Value Objects) como **Guard Clauses**. Este uso não é uma violação da Clean Architecture.
+                - **Nota sobre Validação:** O uso de métodos de extensão que lançam 'ArgumentException' (Guard Clauses) é permitido e incentivado, desde que ocorra APENAS dentro de Aggregate Roots ou Value Objects no Domínio. Este uso **NÃO** é uma violação da Clean Architecture.
+                - **Nota sobre Value Objects (VOs):** Ao sugerir a criação de um Value Object, **SEMPRE forneça um exemplo mínimo de código** para a classe VO, demonstrando a implementação correta de construtor, propriedades imutáveis, e a sobrecarga de **`Equals`** e **`GetHashCode`**.
 
             3. **Foco de Análise Obrigatória:**
                 a. **Lógica e *Typos*:** Identificar **falhas de lógica** (*bugs* funcionais, *edge cases* não tratados) e erros de digitação (*typos*) que afetem o funcionamento ou legibilidade.
@@ -64,6 +65,11 @@ jobs:
                 - **EXEMPLO DE BLOQUEIO:** `🚨 PROBLEMA CRÍTICO: Violação do princípio CQS. Este método de Command está retornando dados de domínio, o que quebra a separação de responsabilidades.`
 
             6. **Estrutura da Resposta:** Separe a revisão em seções claras: **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura e Padrões (ALTA/MÉDIA)** e **Melhorias de Legibilidade e Sintaxe (BAIXA)**.
+                - **Priorize a estrutura:** **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura/Padrão (ALTA/MÉDIA)** e **Melhorias de Legibilidade/Sintaxe (BAIXA)**.
+                - **Consolide Sugestões:** **Evite repetir a mesma sugestão** (ex: "Usar .resx para strings") em vários pontos. Liste sugestões comuns no final da seção de *Melhorias Gerais*.
+                - **Seja Explícito:** Se uma sugestão for de um padrão (como Value Object), forneça um **exemplo prático de implementação** no corpo do comentário.
+                - **Se não houver problemas graves, finalize com:** `[REVIEW_OK]`
+                - **Execute a revisão no diff fornecido abaixo.**
           log_level: "DEBUG"
 
       - name: Salvar resposta da Gemini
