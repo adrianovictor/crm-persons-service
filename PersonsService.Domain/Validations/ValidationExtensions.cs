@@ -1,4 +1,5 @@
-namespace PersonsService.Domain.Extensions;
+namespace PersonsService.Domain.Validations
+;
 
 /// <summary>
 /// Extensões para validação de parâmetros.

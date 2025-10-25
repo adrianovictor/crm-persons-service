@@ -45,6 +45,7 @@ jobs:
                 - **Princípios SOLID e DDD (Domain-Driven Design)**
                 - Uso correto de **Entity Framework e/ou Dapper** (eficiência e performance)
                 - Estrutura de **Docker/Docker-Compose** e scripts de **Liquibase (SQL Server, Postgres, MySQL)**.
+                - **Nota sobre Validação:** O uso de métodos de extensão que lançam 'ArgumentException' é permitido e incentivado, desde que ocorra APENAS dentro de construtores/métodos da camada de Domínio (Aggregate Roots/Value Objects) como **Guard Clauses**. Este uso não é uma violação da Clean Architecture.
 
             3. **Foco de Análise Obrigatória:**
                 a. **Lógica e *Typos*:** Identificar **falhas de lógica** (*bugs* funcionais, *edge cases* não tratados) e erros de digitação (*typos*) que afetem o funcionamento ou legibilidade.

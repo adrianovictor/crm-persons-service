@@ -1,6 +1,6 @@
 using PersonsService.Domain.Core;
 using PersonsService.Domain.Enum;
-using PersonsService.Domain.Extensions;
+using PersonsService.Domain.Validations;
 
 namespace PersonsService.Domain.Entities;
 
@@ -60,7 +60,7 @@ public class Person : Statusable<Person>
     public void RenameIt(string name, string? alias)
     {
         name.ThrowIfNullOrWhiteSpace(nameof(name));
-        
+
         Name = name;
         Alias = alias;
     }
