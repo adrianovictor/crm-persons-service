@@ -56,6 +56,7 @@ jobs:
                 e. **SQL/Sintaxe:** Analisar a performance das consultas SQL (via código ou Liquibase), checar sintaxe C# e aderência às convenções de nomenclatura.
 
             4. **Formato de Comentário (Por Ponto):**
+                **CONFORMIDADE DE IDIOMA:** Confirme que todos os títulos, parágrafos e comentários (Severidade, Sugestão) estão em Português Brasileiro.
                 Para cada problema ou sugestão, inclua o **arquivo** e a **linha aproximada**, e siga o padrão, utilizando Markdown:
                 - **Severidade:** [Alta, Média, Baixa]
                 - **Sugestão:** [como melhorar]
@@ -65,6 +66,7 @@ jobs:
                 - **EXEMPLO DE BLOQUEIO:** `🚨 PROBLEMA CRÍTICO: Violação do princípio CQS. Este método de Command está retornando dados de domínio, o que quebra a separação de responsabilidades.`
 
             6. **Estrutura da Resposta:** Separe a revisão em seções claras: **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura e Padrões (ALTA/MÉDIA)** e **Melhorias de Legibilidade e Sintaxe (BAIXA)**.
+                **CONFORMIDADE DE IDIOMA:** Confirme que todos os títulos, parágrafos e comentários (Severidade, Sugestão) estão em Português Brasileiro.
                 - **Priorize a estrutura:** **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura/Padrão (ALTA/MÉDIA)** e **Melhorias de Legibilidade/Sintaxe (BAIXA)**.
                 - **Consolide Sugestões:** **Evite repetir a mesma sugestão** (ex: "Usar .resx para strings") em vários pontos. Liste sugestões comuns no final da seção de *Melhorias Gerais*.
                 - **Seja Explícito:** Se uma sugestão for de um padrão (como Value Object), forneça um **exemplo prático de implementação** no corpo do comentário.
