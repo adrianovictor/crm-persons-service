@@ -33,9 +33,9 @@ jobs:
           github_repository: ${{ github.repository }}
           github_pull_request_number: ${{ github.event.pull_request.number }}
           git_commit_hash: ${{ github.event.pull_request.head.sha }}
-          model: "gemini-1.5-flash-latest"
+          model: "gemini-1.5-flash"
           pull_request_diff: ${{ steps.get_diff.outputs.pull_request_diff }}
-          pull_request_diff_chunk_size: "3500"
+          pull_request_chunk_size: "3500"
           extra_prompt: |
             **Instruções Detalhadas para o Revisor de Código AI (Branch Develop):**
             1. **Idioma e Tom:** Responda sempre em **Português Brasileiro**. Seja **direto, objetivo e profissional**, como um Engenheiro de Software Sênior.
