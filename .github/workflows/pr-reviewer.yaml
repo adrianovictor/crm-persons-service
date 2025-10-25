@@ -64,7 +64,6 @@ jobs:
 
             6. **Estrutura da Resposta:** Separe a revisão em seções claras: **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura e Padrões (ALTA/MÉDIA)** e **Melhorias de Legibilidade e Sintaxe (BAIXA)**.
           log_level: "DEBUG"
-          log_level: "DEBUG"
 
       - name: Salvar resposta da Gemini
         run: |
