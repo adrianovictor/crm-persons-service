@@ -3,32 +3,45 @@ using PersonsService.Domain.Validations;
 
 namespace PersonsService.Domain.ValueObject;
 
-public class Email
+public class Email : IEquatable<Email>
 {
-    private static readonly Regex EmailRegex = new Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", RegexOptions.Compiled);
-
     public string Address { get; }
 
     public Email(string address)
     {
-        address.ThrowIfNullOrWhiteSpace(nameof(address));
-
-        if (!EmailRegex.IsMatch(address))
+        Address = address.Trim().ToLower();
+        if (!IsValid(Address))
         {
-            throw new ArgumentException("Invalid email format.", nameof(address));
+            throw new ArgumentException("Email inválido.", nameof(address));
         }
-
-        Address = address;
     }
 
-    public override bool Equals(object obj)
+    public static bool IsValid(string email)
     {
-        if (obj == null || GetType() != obj.GetType())
+        if (string.IsNullOrEmpty(email))
         {
             return false;
         }
 
-        return Address == ((Email)obj).Address;
+        try
+        {
+            var addr = new System.Net.Mail.MailAddress(email);
+            return addr.Address == email;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as Email);
+    }
+
+    public bool Equals(Email other)
+    {
+        return other != null && Address == other.Address;
     }
 
     public override int GetHashCode()
@@ -40,4 +53,7 @@ public class Email
     {
         return Address;
     }
+
+    public static implicit operator string(Email email) => email.Address;
+    public static explicit operator Email(string address) => new Email(address);
 }

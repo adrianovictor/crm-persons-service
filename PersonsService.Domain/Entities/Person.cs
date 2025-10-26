@@ -121,26 +121,40 @@ private readonly List<PersonDocument> _documents = [];
 
     public void AddDocument(PersonDocument personDocument)
     {
-        var exists = _documents.Exists(personDocument.Equals);
-        if (!exists) 
+        personDocument.ThrowIfNull(nameof(personDocument));
+        if (_documents.Any(d => d.Equals(personDocument)))
         {
-            _documents.Add(personDocument);
+            throw new ArgumentException("Documento já existe.");
         }
+
+        _documents.Add(personDocument);
+        // var exists = _documents.Exists(personDocument.Equals);
+        // if (!exists) 
+        // {
+        //     _documents.Add(personDocument);
+        // }
     }
 
     public void RemoveDocument(PersonDocument personDocument)
     {
-        var exists = _documents.Exists(personDocument.Equals);
-        if (exists) 
+        personDocument.ThrowIfNull(nameof(personDocument));
+        if (!_documents.Any(d => d.Equals(personDocument)))
         {
-            _documents.Remove(personDocument);
+            throw new ArgumentException("Documento não encontrado.");
         }
+
+        _documents.Remove(personDocument);        
+        // var exists = _documents.Exists(personDocument.Equals);
+        // if (exists) 
+        // {
+        //     _documents.Remove(personDocument);
+        // }
     }
 
     public void Delete()
     {
-        Name = $"DELETED.{DateTime.Now.ToString("yyyyMMddHHmmss")}.{Name}";
-        Email = new Email($"DELETED.{DateTime.Now.ToString("yyyyMMddHHmmss")}.{Email.Address}");
+        Name = $"DELETED.{DateTime.Now:yyyyMMddHHmmss}.{Name}";
+        Email = new Email($"DELETED.{DateTime.Now:yyyyMMddHHmmss}.{Email.Address}");
 
         ChangeStatus(Status.Delete);
     }
