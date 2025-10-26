@@ -1,6 +1,3 @@
-using System.Text.RegularExpressions;
-using PersonsService.Domain.Validations;
-
 namespace PersonsService.Domain.ValueObject;
 
 public class Email : IEquatable<Email>
