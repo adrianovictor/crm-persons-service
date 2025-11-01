@@ -7,7 +7,7 @@ namespace PersonsService.Domain.Entities;
 
 public class Person : Statusable<Person>
 {
-private readonly List<PersonDocument> _documents = [];
+    private readonly List<PersonDocument> _documents = [];
 
     public Guid UniqueId { get; protected set; }
     public string Name { get; protected set; }
@@ -45,12 +45,11 @@ private readonly List<PersonDocument> _documents = [];
     }
 
     public Person(
-        Guid uniqueId, string name, Gender gender, Status status, MaritalStatus maritalStatus, 
+        string name, Gender gender, Status status, MaritalStatus maritalStatus, 
         string? picture, string? alias, string? jobTitle, DateTime? dateOfBirth, 
         string? nationality, string? naturality, string email, string? notes, int? enterpriseId, 
         IReadOnlyCollection<PersonDocument> documents) : this()
     {
-        UniqueId = uniqueId; // Builder define o ID ou deixa o padrão
         Name = name;
         Gender = gender;
         MaritalStatus = maritalStatus;
