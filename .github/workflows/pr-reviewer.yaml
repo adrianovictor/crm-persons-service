@@ -163,6 +163,9 @@ jobs:
           #       - **Execute a revisão no diff fornecido abaixo.**
           log_level: "DEBUG"
 
+      - name: Aguardar para evitar rate limit
+        run: sleep 10
+
       - name: Salvar resposta da Gemini
         run: |
           echo "${{ steps.gemini_review.outputs.gemini_log }}" > gemini_log.txt
