@@ -29,21 +29,23 @@ public class PersonBuilder
     public PersonBuilder() { }
     
     // Método estático para uso rápido: new PersonBuilder().WithXXX().Build()
-    public static PersonBuilder New() => new PersonBuilder();
+    public static PersonBuilder New() => new();
 
     // --- Métodos de Configuração (Fluent Interface) ---
     
     public PersonBuilder WithName(string name) 
     {
         // Validação do campo obrigatório no próprio Builder
-        name.ThrowIfNullOrWhiteSpace(nameof(name)); 
+        name.ThrowIfNullOrWhiteSpace(nameof(name));
         _name = name;
+        
         return this;
     }
 
     public PersonBuilder WithGender(Gender gender) 
     {
         _gender = gender;
+
         return this;
     }
 
@@ -63,44 +65,32 @@ public class PersonBuilder
         _notes = notes;
         _enterpriseId = enterpriseId;
         _maritalStatus = maritalStatus;
+
         return this;
     }
     
     public PersonBuilder WithStatus(Status status)
     {
         _status = status;
+
         return this;
     }
     
     public PersonBuilder WithExistingDocuments(IReadOnlyCollection<PersonDocument> documents)
     {
         if (documents != null) _documents.AddRange(documents);
-        return this;
-    }
-    
-    public PersonBuilder WithExistingId(Guid id)
-    {
-        _uniqueId = id;
+
         return this;
     }
 
-    // --- Método de Construção ---
     public Person Build()
     {
-        // Validação final de integridade antes de chamar o construtor protegido
         if (_name == string.Empty) 
         {
             throw new InvalidOperationException("O nome da Pessoa deve ser definido antes de construir.");
         }
-        
-        // Validação do estado derivado: Se DateOfBirth está presente, a idade deve ser consistente,
-        // mas como removemos o Age do estado, confiamos que o Builder só passa o DoB, e o Person calcula.
-        // Não há mais checagem de Age vs DoB necessária aqui.
-
-        var idToUse = _uniqueId == Guid.Empty ? Guid.NewGuid() : _uniqueId;
 
         return new Person(
-            idToUse,
             _name,
             _gender,
             _status,

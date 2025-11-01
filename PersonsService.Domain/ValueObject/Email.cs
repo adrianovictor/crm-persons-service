@@ -52,5 +52,5 @@ public class Email : IEquatable<Email>
     }
 
     public static implicit operator string(Email email) => email.Address;
-    public static explicit operator Email(string address) => new Email(address);
+    public static explicit operator Email(string address) => new(address);
 }
