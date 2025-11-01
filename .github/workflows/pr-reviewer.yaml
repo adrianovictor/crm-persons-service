@@ -37,93 +37,50 @@ jobs:
           pull_request_diff: ${{ steps.get_diff.outputs.pull_request_diff }}
           pull_request_chunk_size: "3500"
           extra_prompt: |
-            **Instruções Detalhadas para o Revisor de Código AI (Branch Develop):**
+            **Execute a revisão no diff fornecido abaixo, seguindo rigorosamente estes critérios.**      
             
-            1. **Idioma e Tom:** Responda sempre em **Português Brasileiro**. Seja **direto, objetivo e profissional**, como um Engenheiro de Software Sênior experiente em revisões de PR.
+            **Revisor AI - Português Brasileiro**
             
-            2. **Contexto Arquitetural:** O código é para APIs em .NET Core seguindo:
-                - **Clean Architecture / Arquitetura em Camadas**
-                - **CQRS com MediatR** (separação clara de Commands e Queries)
-                - **Princípios SOLID e DDD (Domain-Driven Design)**
-                - Uso correto de **Entity Framework e/ou Dapper**
-                - **Docker/Docker-Compose** e scripts de **Liquibase**
-                - **Nota sobre Validação:** Guard Clauses com `ArgumentException` são permitidas APENAS em Aggregate Roots ou Value Objects no Domínio.
-                - **Nota sobre Value Objects:** Ao sugerir criação de VO, forneça exemplo mínimo de código.
-
-            3. **PRINCÍPIO FUNDAMENTAL DE REVISÃO:**
-                - **Priorize apenas melhorias que impactam DIRETAMENTE:**
-                  - Correção de bugs ou comportamentos inesperados
-                  - Performance significativa (ex: N+1 queries, iterações desnecessárias)
-                  - Segurança (SQL Injection, dados sensíveis expostos)
-                  - Manutenibilidade crítica (violações graves de SOLID/DDD que dificultam evolução)
-                
-                - **NÃO sugira refatorações arquiteturais amplas** (ex: "Implemente Builder Pattern", "Crie uma Factory") a menos que:
-                  - O código atual esteja claramente **quebrando** um princípio (ex: violação de SRP evidente)
-                  - A mudança seja **pequena e localizada** (não exija reescrever múltiplas classes)
-                  - Haja um ganho **mensurável** (ex: redução de 50% no tempo de resposta)
-                
-                - **Sugestões de padrões/refatorações devem ser reservadas para:**
-                  - Comentários de "Melhorias Futuras" (baixa prioridade)
-                  - Não devem bloquear o PR
-
-            4. **Foco de Análise Obrigatória:**
-                a. **Bugs e Lógica:** Identificar falhas funcionais, edge cases não tratados, race conditions.
-                b. **Performance Crítica:** Gargalos evidentes (loops aninhados, queries N+1, operações síncronas bloqueantes).
-                c. **Segurança:** Injeção de SQL, exposição de dados sensíveis, validações ausentes.
-                d. **Violações Arquiteturais Graves:** 
-                  - Acesso direto a repositórios na camada de apresentação
-                  - Lógica de negócio em controllers
-                  - Dependências circulares
-                e. **Async/Await:** Uso incorreto que cause deadlocks ou bloqueios.
-                f. **Code Smells Graves:** Métodos com >100 linhas, duplicação excessiva (>3 ocorrências), alto acoplamento.
-
-            5. **O QUE NÃO COMENTAR (a menos que seja crítico):**
-                - Sugestões de padrões de design que exijam refatoração ampla
-                - Melhorias estéticas (ex: "renomeie variável X para Y" se o nome atual for claro)
-                - Otimizações micro (ex: usar `StringBuilder` para 2 concatenações)
-                - Sugestões de bibliotecas alternativas sem justificativa clara de ganho
-
-            6. **Formato de Comentário (Por Ponto):**
-                - Para cada problema, inclua **arquivo**, **linha aproximada** e use Markdown:
-                - **Severidade:** [Crítica, Alta, Média, Baixa]
-                - **Impacto:** [descreva o problema real - ex: "Causa N+1 queries, aumentando tempo de resposta em 300%"]
-                - **Sugestão:** [como melhorar, com exemplo de código quando aplicável]
-                
-                **Exemplo de comentário BOM:**
-                ```
-                      📍 **Arquivo:** `UserService.cs`, linha 45
-                      **Severidade:** Alta
-                      **Impacto:** O método `GetUsers()` executa uma query por usuário dentro do loop (N+1), causando 500+ queries para 500 usuários.
-                      **Sugestão:** Use `.Include(u => u.Orders)` para carregar relacionamentos em uma única query.
-                ```
-                      
-                      **Exemplo de comentário RUIM (evite):**
-                ```
-                      📍 **Arquivo:** `User.cs`, linha 10
-                      **Severidade:** Baixa
-                      **Sugestão:** Considere implementar o padrão Builder para facilitar a criação de objetos User complexos.
-                ```
-
-            7. **Regra de Bloqueio (Problemas Críticos):**
-                - Inicie comentários críticos com: `🚨 PROBLEMA CRÍTICO:`
-                - **EXEMPLO:** `🚨 PROBLEMA CRÍTICO: SQL Injection detectada. Use parâmetros ao invés de concatenação de strings.`
-
-            8. **Estrutura da Resposta:**
-                - **🚨 Problemas Críticos (Bloqueio)** - bugs graves, segurança, violações arquiteturais severas
-                - **⚠️ Problemas de Alta Prioridade** - performance, manutenibilidade crítica
-                - **💡 Sugestões de Melhoria (Média/Baixa)** - code smells leves, melhorias incrementais
-                - **📝 Melhorias Futuras (Opcional)** - refatorações amplas, padrões de design (não bloqueiam PR)
-                
-                **Consolide sugestões repetitivas** em um único comentário ao final.
-                
-                Se não houver problemas graves: `✅ [REVIEW_OK] - Código aprovado sem problemas críticos.`
-
-            9. **Princípio de Economia de Comentários:**
-                - Máximo de **5-7 comentários por PR** (exceto PRs muito grandes)
-                - Se tiver >10 sugestões, priorize apenas as 5 mais impactantes
-                - Agrupe problemas similares (ex: "3 métodos com mesma violação de SRP")
-
-            **Execute a revisão no diff fornecido abaixo, seguindo rigorosamente estes critérios.**          
+            **Contexto:** .NET Core API | Clean Architecture | CQRS/MediatR | SOLID/DDD | EF Core/Dapper
+            
+            **Revise APENAS problemas com impacto real:**
+            
+            **🚨 CRÍTICO (bloqueiam PR):**
+            - Bugs funcionais, falhas de lógica, edge cases não tratados
+            - Segurança: SQL Injection, dados sensíveis expostos, validações ausentes
+            - Violações graves de arquitetura: lógica de negócio em controllers, acesso direto a repos na API, dependências circulares
+            - Async/await incorreto causando deadlocks
+            
+            **⚠️ ALTO (priorize):**
+            - Performance evidente: N+1 queries, loops aninhados, operações síncronas bloqueantes
+            - Violações claras de SOLID/DDD que impedem evolução do código
+            - Race conditions, concorrência mal implementada
+            
+            **💡 MÉDIO/BAIXO (opcional):**
+            - Code smells graves: métodos >100 linhas, duplicação >3x
+            - Melhorias incrementais com ganho mensurável
+            
+            **❌ NÃO COMENTE:**
+            - Refatorações amplas (ex: "implemente Builder/Factory") exceto se código atual quebrar princípios
+            - Otimizações micro sem ganho claro
+            - Renomeações se nome atual for compreensível
+            - Sugestões de bibliotecas alternativas sem justificativa
+            
+            **Formato (máx. 5-7 comentários):**
+            ```
+              📍 Arquivo: `Nome.cs`, linha X
+              Severidade: [Crítica|Alta|Média]
+              Impacto: [problema real mensurável]
+              Sugestão: [solução com código se aplicável]
+            ```
+              
+            **Regras:**
+            - Problema crítico inicia com: `🚨 PROBLEMA CRÍTICO:`
+            - Agrupe sugestões repetitivas em único comentário
+            - Guard Clauses (`ArgumentException`) permitidas APENAS em Aggregate Roots/VOs do Domínio
+            - Se sugerir Value Object, forneça exemplo de código
+            
+            Se OK: `✅ [REVIEW_OK]`            
           # extra_prompt: |
           #   **Instruções Detalhadas para o Revisor de Código AI (Branch Develop):**
           #   1. **Idioma e Tom:** Responda sempre em **Português Brasileiro**. Seja **direto, objetivo e profissional**, como um Engenheiro de Software Sênior.
@@ -163,8 +120,8 @@ jobs:
           #       - **Execute a revisão no diff fornecido abaixo.**
           log_level: "DEBUG"
 
-      - name: Aguardar para evitar rate limit
-        run: sleep 10
+      # - name: Aguardar para evitar rate limit
+      #   run: sleep 10
 
       - name: Salvar resposta da Gemini
         run: |
