@@ -79,8 +79,15 @@ jobs:
             - Agrupe sugestões repetitivas em único comentário
             - Guard Clauses (`ArgumentException`) permitidas APENAS em Aggregate Roots/VOs do Domínio
             - Se sugerir Value Object, forneça exemplo de código
+
+            **Estrutura da Resposta:** Separe a revisão em seções claras: **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura e Padrões (ALTA/MÉDIA)** e **Melhorias de Legibilidade e Sintaxe (BAIXA)**.
+              - **CONFORMIDADE DE IDIOMA:** Confirme que todos os títulos, parágrafos e comentários (Severidade, Sugestão) estão em Português Brasileiro.
+              - **Priorize a estrutura:** **Problemas Críticos (Bloqueio)**, **Recomendações de Arquitetura/Padrão (ALTA/MÉDIA)** e **Melhorias de Legibilidade/Sintaxe (BAIXA)**.
+              - **Consolide Sugestões:** **Evite repetir a mesma sugestão** (ex: "Usar .resx para strings") em vários pontos. Liste sugestões comuns no final da seção de *Melhorias Gerais*.
+              - **Seja Explícito:** Se uma sugestão for de um padrão (como Value Object), forneça um **exemplo prático de implementação** no corpo do comentário.
+              - **Se não houver problemas graves, finalize com:** `[REVIEW_OK]`
+              - **Execute a revisão no diff fornecido abaixo.**
             
-            Se OK: `✅ [REVIEW_OK]`            
           # extra_prompt: |
           #   **Instruções Detalhadas para o Revisor de Código AI (Branch Develop):**
           #   1. **Idioma e Tom:** Responda sempre em **Português Brasileiro**. Seja **direto, objetivo e profissional**, como um Engenheiro de Software Sênior.
@@ -119,9 +126,6 @@ jobs:
           #       - **Se não houver problemas graves, finalize com:** `[REVIEW_OK]`
           #       - **Execute a revisão no diff fornecido abaixo.**
           log_level: "DEBUG"
-
-      # - name: Aguardar para evitar rate limit
-      #   run: sleep 10
 
       - name: Salvar resposta da Gemini
         run: |
